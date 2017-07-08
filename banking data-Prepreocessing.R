@@ -100,10 +100,13 @@ Bankdata2Train = subset(Bankdata2, split == TRUE)
 Bankdata2Test = subset(Bankdata2, split == FALSE)
 
 
-TrainLabels=Bankdata2Train$y
-TestLabels=Bankdata2Test$y
+TrainLabels=Bankdata2Train$Y
+TestLabels=Bankdata2Test$Y
 Bankdata2Train=Bankdata2Train[,-21]
 Bankdata2Test=Bankdata2Test[,-21]
+sum(is.na(Bankdata2Test))
+sum(is.na(Bankdata2Train))
+
 Bankdata_pred=knn(train=Bankdata2Train,test=Bankdata2Test,cl=TrainLabels,k=10)
 
 
