@@ -1,10 +1,16 @@
 #Bank Marketing data prediction using KNN Classifier
 #Dataset consists of 41K+ records related to Marketing campaign of a Portugese bank and used to predict if 
 #a customer will subscribe to a Term Deposit or not
+#install.packages("class")
+#install.packages("plyr")
+#install.packages("gmodels")
 library(caTools)
 library(gmodels)
 library(DMwR)
 library(class)
+library(plyr)
+library(class)
+library(gmodels)
 #Reading Bank Marketing Campaing Data
 Bankdata=read.csv("bank-additional-full.csv")
 #View(Bankdata)
@@ -74,25 +80,35 @@ summary(Bankdata$JOB)
 summary(Bankdata$EDUCATION)
 summary(Bankdata$DEFAULT) # 8597
 ################################
-#converting DEFAULT unknowns to Yes as there will be only 2 options for a Default: No and Yes
-# str(Bankdata$DEFAULT)  
-# def1=Bankdata$DEFAULT
-# str(def1)
-# def1[7441]
-# Bankdata=cbind(bankd)
-# count=0
-# for(i in 1:41188)
-# {
-#   if(def1[i]=="unknown"){
-#     def1[i]="yes"    
-#     count=count+1
-#   }
-#   }
-# print(count)
-# View(def1)
-# summary(def1)
+
+BankdataUpd=Bankdata
+#chaning the unknown to NA values
+BankdataUpd$JOB= revalue(BankdataUpd$JOB, c("unknown"=NA))
+BankdataUpd$MARITAL= revalue(BankdataUpd$MARITAL, c("unknown"=NA))
+BankdataUpd$EDUCATION= revalue(BankdataUpd$EDUCATION, c("unknown"=NA))
+BankdataUpd$DEFAULT= revalue(BankdataUpd$DEFAULT, c("unknown"=NA))
+BankdataUpd$HOUSING= revalue(BankdataUpd$HOUSING, c("unknown"=NA))
+BankdataUpd$LOAN= revalue(BankdataUpd$LOAN, c("unknown"=NA))
 
 #kNN imputation for Unknown values after converting them to NA's
-BankdataUpd <- lapply(Bankdata, gsub, pattern = "unknown", replacement = NA, fixed = TRUE)
-BankdataUpd=as.data.frame(BankdataUpd)
-BankdataUpd=knnImputation(BankdataUpd,k=10)
+Bankdata2=knnImputation(BankdataUpd,k=10)
+
+# implimentation of KNN classifer
+set.seed(123)
+split = sample.split(Bankdata2, SplitRatio = 0.70)
+Bankdata2Train = subset(Bankdata2, split == TRUE)
+Bankdata2Test = subset(Bankdata2, split == FALSE)
+
+
+TrainLabels=Bankdata2Train$y
+TestLabels=Bankdata2Test$y
+Bankdata2Train=Bankdata2Train[,-21]
+Bankdata2Test=Bankdata2Test[,-21]
+Bankdata_pred=knn(train=Bankdata2Train,test=Bankdata2Test,cl=TrainLabels,k=10)
+
+
+
+
+
+
+
